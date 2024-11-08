@@ -1,0 +1,120 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_BOOKINGS 100
+
+// Define Booking structure
+typedef struct {
+    int bookingID;
+    char guestName[50];
+    int roomNumber;
+    char checkInDate[11];
+    char checkOutDate[11];
+    int isBooked; // 1 if booked, 0 if available
+} Booking;
+
+// Function prototypes
+void initializeBookings(Booking bookings[], int size);
+void addBooking(Booking bookings[], int *count);
+void viewBookings(Booking bookings[], int count);
+void cancelBooking(Booking bookings[], int *count, int bookingID);
+
+int main() {
+    Booking bookings[MAX_BOOKINGS];
+    int count = 0;
+    int choice, bookingID;
+
+    initializeBookings(bookings, MAX_BOOKINGS);
+
+    while (1) {
+        printf("\nHotel Booking System:\n");
+        printf("1. Add Booking\n");
+        printf("2. View Bookings\n");
+        printf("3. Cancel Booking\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addBooking(bookings, &count);
+                break;
+            case 2:
+                viewBookings(bookings, count);
+                break;
+            case 3:
+                printf("Enter Booking ID to cancel: ");
+                scanf("%d", &bookingID);
+                cancelBooking(bookings, &count, bookingID);
+                break;
+            case 4:
+                printf("Exiting system.\n");
+                return 0;
+            default:
+                printf("Invalid choice. Try again.\n");
+        }
+    }
+}
+
+// Initialize bookings to available
+void initializeBookings(Booking bookings[], int size) {
+    for (int i = 0; i < size; i++) {
+        bookings[i].isBooked = 0; // Set to available
+    }
+}
+
+// Add a new booking
+void addBooking(Booking bookings[], int *count) {
+    if (*count >= MAX_BOOKINGS) {
+        printf("Booking limit reached.\n");
+        return;
+    }
+
+    Booking newBooking;
+    newBooking.bookingID = *count + 1;
+
+    printf("Enter guest name: ");
+    scanf(" %[^\n]%*c", newBooking.guestName);  // Read until newline
+
+    printf("Enter room number: ");
+    scanf("%d", &newBooking.roomNumber);
+
+    printf("Enter check-in date (YYYY-MM-DD): ");
+    scanf("%s", newBooking.checkInDate);
+
+    printf("Enter check-out date (YYYY-MM-DD): ");
+    scanf("%s", newBooking.checkOutDate);
+
+    newBooking.isBooked = 1;
+    bookings[*count] = newBooking;
+    (*count)++;
+
+    printf("Booking added successfully.\n");
+}
+
+// View all bookings
+void viewBookings(Booking bookings[], int count) {
+    printf("\nList of Bookings:\n");
+    for (int i = 0; i < count; i++) {
+        if (bookings[i].isBooked) {
+            printf("Booking ID: %d\n", bookings[i].bookingID);
+            printf("Guest Name: %s\n", bookings[i].guestName);
+            printf("Room Number: %d\n", bookings[i].roomNumber);
+            printf("Check-in Date: %s\n", bookings[i].checkInDate);
+            printf("Check-out Date: %s\n", bookings[i].checkOutDate);
+            printf("----------------------------\n");
+        }
+    }
+}
+
+// Cancel a booking
+void cancelBooking(Booking bookings[], int *count, int bookingID) {
+    for (int i = 0; i < *count; i++) {
+        if (bookings[i].bookingID == bookingID && bookings[i].isBooked) {
+            bookings[i].isBooked = 0;
+            printf("Booking ID %d canceled.\n", bookingID);
+            return 0;
+        }
+    }
+    printf("Booking ID not found or already canceled.\n");
+}
